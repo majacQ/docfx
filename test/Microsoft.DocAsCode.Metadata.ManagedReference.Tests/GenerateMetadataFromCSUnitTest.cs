@@ -2622,7 +2622,7 @@ namespace Test1
     }
 }
 ";
-            MetadataItem output = GenerateYamlMetadata(CreateCompilationFromCSharpCode(code, MetadataReference.CreateFromFile(typeof(System.ComponentModel.TypeConverterAttribute).Assembly.Location)));
+            MetadataItem output = GenerateYamlMetadata(CreateCompilationFromCSharpCode(code));
             var @class = output.Items[0].Items[0];
             Assert.NotNull(@class);
             Assert.Equal("TestAttribute", @class.DisplayNames[SyntaxLanguage.CSharp]);
@@ -2868,6 +2868,37 @@ namespace Test1
             var flagsUndefinedValue = output.Items[0].Items[0].Items[4];
             Assert.NotNull(flagsUndefinedValue);
             Assert.Equal(@"public void FlagsUndefinedValue(AttributeTargets? targets = (AttributeTargets)65536)", flagsUndefinedValue.Syntax.Content[SyntaxLanguage.CSharp]);
+        }
+
+
+        [Fact]
+        public void TestGenerateMetadataWithDefaultParameterValueAttribute()
+        {
+            string code = @"
+using System;
+using System.Runtime.InteropServices;
+
+namespace Test1
+{
+    public class Test
+    {
+        public void Double([Optional][DefaultParameterValue(0)]double i) { }
+        public void Float([Optional][DefaultParameterValue(0)]float i) { }
+        public void Decimal([Optional][DefaultParameterValue(0)]decimal i) { }
+        public void Long([Optional][DefaultParameterValue(0)]long i) { }
+        public void Uint([Optional][DefaultParameterValue(0)]uint i) { }
+    }
+}
+";
+            MetadataItem output = GenerateYamlMetadata(CreateCompilationFromCSharpCode(code));
+
+            Assert.Collection(
+                output.Items[0].Items[0].Items,
+                item => Assert.Equal(@"public void Double(double i = 0)", item.Syntax.Content[SyntaxLanguage.CSharp]),
+                item => Assert.Equal(@"public void Float(float i = 0F)", item.Syntax.Content[SyntaxLanguage.CSharp]),
+                item => Assert.Equal(@"public void Decimal(decimal i = 0M)", item.Syntax.Content[SyntaxLanguage.CSharp]),
+                item => Assert.Equal(@"public void Long(long i = 0L)", item.Syntax.Content[SyntaxLanguage.CSharp]),
+                item => Assert.Equal(@"public void Uint(uint i = default(uint))", item.Syntax.Content[SyntaxLanguage.CSharp]));
         }
 
         [Fact]
@@ -3253,24 +3284,7 @@ namespace Test1
 
         private static Compilation CreateCompilationFromCSharpCode(string code, params MetadataReference[] references)
         {
-            return CreateCompilationFromCSharpCode(code, "test.dll", references);
-        }
-
-        private static Compilation CreateCompilationFromCSharpCode(string code, string assemblyName, params MetadataReference[] references)
-        {
-            var tree = SyntaxFactory.ParseSyntaxTree(code);
-            var defaultReferences = new List<MetadataReference> { MetadataReference.CreateFromFile(typeof(object).Assembly.Location), MetadataReference.CreateFromFile(typeof(EditorBrowsableAttribute).Assembly.Location) };
-            if (references != null)
-            {
-                defaultReferences.AddRange(references);
-            }
-
-            var compilation = CSharpCompilation.Create(
-                assemblyName,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary),
-                syntaxTrees: new[] { tree },
-                references: defaultReferences);
-            return compilation;
+            return CompilationUtility.CreateCompilationFromCsharpCode(code, "test.dll", references);
         }
 
         private static Assembly CreateAssemblyFromCSharpCode(string code, string assemblyName)
@@ -3595,19 +3609,19 @@ namespace Test1
             {
                 var fnptr = output.Items[0].Items[0].Items[0];
                 Assert.NotNull(fnptr);
-                Assert.Equal(@"public delegate*<delegate*<void>> a", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
+                Assert.Equal(@"public delegate*<delegate*<void> > a", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
 
                 fnptr = output.Items[0].Items[0].Items[1];
                 Assert.NotNull(fnptr);
-                Assert.Equal(@"public delegate*<delegate* unmanaged<void>> b", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
+                Assert.Equal(@"public delegate*<delegate* unmanaged<void> > b", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
 
                 fnptr = output.Items[0].Items[0].Items[2];
                 Assert.NotNull(fnptr);
-                Assert.Equal(@"public delegate*<delegate* unmanaged[Stdcall]<void>> c", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
+                Assert.Equal(@"public delegate*<delegate* unmanaged[Stdcall]<void> > c", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
 
                 fnptr = output.Items[0].Items[0].Items[3];
                 Assert.NotNull(fnptr);
-                Assert.Equal(@"public delegate*<delegate* unmanaged[Stdcall, Thiscall]<void>> d", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
+                Assert.Equal(@"public delegate*<delegate* unmanaged[Stdcall, Thiscall]<void> > d", fnptr.Syntax.Content[SyntaxLanguage.CSharp]);
             }
         }
 

@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Shared/base.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
     <Description>Generates documentation directly from source code and MarkDown files</Description>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,19 +33,12 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
-    <PackageReference Include="NuGet.Common" Version="5.7.0" />
     <PackageReference Include="Owin" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Owin" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.FileSystems" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.Hosting" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.SelfHost" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="4.1.1" />
-    <PackageReference Include="SQLitePCLRaw.core" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Owin" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.FileSystems" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.Hosting" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.SelfHost" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="4.2.2" />
   </ItemGroup>
 </Project>

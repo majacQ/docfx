@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Shared/base.props" />
-
   <ItemGroup>
     <EmbeddedResource Include="Transform\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
     <EmbeddedResource Include="Filters\defaultfilterconfig.yml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
@@ -15,17 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.9.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Composition" Version="1.0.31" />
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <Reference Include="System.Threading.Tasks" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.4.0" />
   </ItemGroup>
 </Project>
