@@ -1,52 +1,55 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Shared/base.props" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <Description>Generates documentation directly from source code and MarkDown files</Description>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PackAsTool>true</PackAsTool>
+    <RollForward>Major</RollForward>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <Description>The docfx command line tool published as .NET tool</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="langwordMapping.yml">
-    </EmbeddedResource>
-    <EmbeddedResource Include="Template\*.zip" />
+    <None Include="../../THIRD-PARTY-NOTICES.TXT" CopyToOutputDirectory="PreserveNewest" PackageCopyToOutput="true" />
+  </ItemGroup>
+
+  <!-- Custom target to merge docfx templates to TargetFramework independent folder.
+       By default, docfx templates is packed to `tools/$(TargetFramework)/any/templates/*`.
+       This target rewrite PackagePath and template files are placed at `templates/*` directory.
+  -->
+  <Target Name="RewriteDocfxTemplateFiles" AfterTargets="PackTool">
+    <PropertyGroup>
+      <!-- Select first element of TargetFrameworks as template source (e.g. `net8.0` is selected when TargetFrameworks `net8.0;9.0`) -->
+      <DocfxTemplateSourceTargetFramework>$(TargetFrameworks.Split(";")[0])</DocfxTemplateSourceTargetFramework>
+    </PropertyGroup>
+    <!-- If TargetFramework is selected version. Rewrite template files PackagePath.-->
+    <ItemGroup Condition="'$(TargetFramework)' == '$(DocfxTemplateSourceTargetFramework)'">
+      <TfmSpecificPackageFile Update="@(TfmSpecificPackageFile)"
+                              Condition="$([System.String]::new('%(TfmSpecificPackageFile.PackagePath)').StartsWith('tools/$(TargetFramework)/any/templates/'))"
+                              PackagePath="$([System.String]::new('%(TfmSpecificPackageFile.PackagePath)').Replace('tools/$(TargetFramework)/any/',''))"/>
+    </ItemGroup>
+    <!-- If TargetFramework is not selected version. Remove template files from package. -->
+    <ItemGroup Condition="'$(TargetFramework)' != '$(DocfxTemplateSourceTargetFramework)'">
+      <TfmSpecificPackageFile Remove="@(TfmSpecificPackageFile)"
+                              Condition="$([System.String]::new('%(TfmSpecificPackageFile.PackagePath)').StartsWith('tools/$(TargetFramework)/any/templates/'))"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- Target to add custom configProperties to `docfx.runsettings.json`. See [.NET Runtime configuration settings](https://learn.microsoft.com/en-us/dotnet/core/runtime-config) -->
+  <Target Name="SetDocfxDotNetToolMode" BeforeTargets="PrepareForBuild" Condition="'$(_IsPacking)'=='true' AND '$(_IsPublishing)'!='true'">
+    <ItemGroup>
+      <RuntimeHostConfigurationOption Include="Docfx.DotnetToolMode" Value="true" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="docfx.Snapshot.Tests" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.Common\Microsoft.DocAsCode.Build.Common.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.ConceptualDocuments\Microsoft.DocAsCode.Build.ConceptualDocuments.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.Engine\Microsoft.DocAsCode.Build.Engine.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.ManagedReference\Microsoft.DocAsCode.Build.ManagedReference.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.ResourceFiles\Microsoft.DocAsCode.Build.ResourceFiles.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.RestApi\Microsoft.DocAsCode.Build.RestApi.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.SchemaDriven\Microsoft.DocAsCode.Build.SchemaDriven.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.TableOfContents\Microsoft.DocAsCode.Build.TableOfContents.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Build.UniversalReference\Microsoft.DocAsCode.Build.UniversalReference.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Common\Microsoft.DocAsCode.Common.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Dfm\Microsoft.DocAsCode.Dfm.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.HtmlToPdf\Microsoft.DocAsCode.HtmlToPdf.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.MarkdigEngine\Microsoft.DocAsCode.MarkdigEngine.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Metadata.ManagedReference.Roslyn\Microsoft.DocAsCode.Metadata.ManagedReference.Roslyn.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Plugins\Microsoft.DocAsCode.Plugins.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Metadata.ManagedReference\Microsoft.DocAsCode.Metadata.ManagedReference.csproj" />
-    <ProjectReference Include="..\Microsoft.DocAsCode.Glob\Microsoft.DocAsCode.Glob.csproj" />
+    <ProjectReference Include="..\Docfx.App\Docfx.App.csproj" />
+    <ProjectReference Include="..\Docfx.Dotnet\Docfx.Dotnet.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="1.9.71" />
-    <PackageReference Include="NuGet.Common" Version="5.7.0" />
-    <PackageReference Include="Owin" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Owin" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.FileSystems" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.Hosting" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.SelfHost" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="4.1.1" />
-    <PackageReference Include="SQLitePCLRaw.core" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Spectre.Console.Cli" />
   </ItemGroup>
 </Project>

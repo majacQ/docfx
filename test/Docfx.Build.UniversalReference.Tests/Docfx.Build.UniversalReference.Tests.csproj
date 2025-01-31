@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <None Include="TestData\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Docfx.Build\Docfx.Build.csproj" />
+    <ProjectReference Include="..\..\src\Docfx.Build.UniversalReference\Docfx.Build.UniversalReference.csproj" />
+  </ItemGroup>
+</Project>

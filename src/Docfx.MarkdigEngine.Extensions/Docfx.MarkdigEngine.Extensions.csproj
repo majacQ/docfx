@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Markdig" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="PlantUml.Net" />
+  </ItemGroup>
+
+</Project>

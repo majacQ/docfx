@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" />
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Docfx.Plugins\Docfx.Plugins.csproj" />
+    <ProjectReference Include="..\Docfx.YamlSerialization\Docfx.YamlSerialization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="docfx.Build" />
+    <InternalsVisibleTo Include="Docfx.Dotnet" />
+  </ItemGroup>
+
+  <!-- TODO: Following settings will be removed after NewtonsoftJson dependencies are removed. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Docfx.Build.Tests" />
+    <InternalsVisibleTo Include="docfx.Tests" />
+  </ItemGroup>
+</Project>

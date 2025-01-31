@@ -1,0 +1,44 @@
+﻿- name: Get started
+- href: basic-concepts.md
+- href: ../index.md
+
+- name: Essentials
+- href: markdown.md
+- href: table-of-contents.md
+- href: config.md
+- href: template.md
+- href: dotnet-api-docs.md
+- href: rest-api-docs.md
+- href: links-and-cross-references.md
+- href: pdf.md
+
+- name: Advanced
+- href: additional-languages.md
+- href: ./publish-azure-devops.md
+
+- name: Reference
+- href: ../reference/docfx-json-reference.md
+- name: Commandline Reference
+  href: ../reference/docfx-cli-reference/toc.yml
+- href: ../reference/docfx-environment-variables-reference.md
+- href: api-page.yml
+
+- name: Archive
+- name: Templates
+  items:
+  - href: ../tutorial/intro_template.md
+  - href: ../tutorial/howto_create_custom_template.md
+- name: Managed Reference
+  items:
+  - href: ../spec/metadata_format_spec.md
+  - href: dotnet-yaml-format.md
+  - href: ../tutorial/intro_overwrite_files.md
+- name: Schema Document Processor
+  items:
+  - href: ../spec/sdp_design_spec.md
+  - href: ../spec/docfx_document_schema.md
+- name: Plugins
+  items:
+  - href: ../tutorial/howto_build_your_own_type_of_documentation_with_custom_plug-in.md
+  - href: ../tutorial/howto_add_a_customized_post_processor.md
+  - href: ../tutorial/advanced_support_hyperlink.md
